@@ -62,12 +62,6 @@ router.get("/", async function (req, res, next) {
     throw new BadRequestError(errs);
   }
 
-  if (req.query?.minEmployees && req.query?.maxEmployees) {
-    if (+req.query.minEmployees > +req.query.maxEmployees) {
-      throw new BadRequestError("minEmployees must be less than maxEmployees.");
-    }
-  }
-
   const companies = await Company.findAll((req.query || {}));
   return res.json({ companies });
 });

@@ -46,18 +46,18 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
  */
 
 function sqlForFilter(filterParams) {
-  const keys = Object.keys(dataToUpdate);
-  if (keys.length === 0) return { where: "", values: "" };
+  const keys = Object.keys(filterParams);
+  if (keys.length === 0) return { where: "", values: [] };
+
+  if (filterParams.minEmployees && filterParams.maxEmployees) {
+    if (+filterParams.minEmployees > +filterParams.maxEmployees) {
+      throw new BadRequestError("minEmployees must be less than maxEmployees.");
+    }
+  }
 
   const where = [];
   const values = []
   let num = 1;
-
-  if (filterParams.nameLike) {
-    where.push(`name ILIKE $${num}`)
-    values.push(`'%${filterParams.nameLike}%'`);
-    num++;
-  }
 
   if (filterParams.minEmployees) {
     where.push(`num_employees >= $${num}`)
@@ -70,6 +70,13 @@ function sqlForFilter(filterParams) {
     values.push(+filterParams.maxEmployees);
     num++;
   }
+
+  if (filterParams.nameLike) {
+    where.push(`name ILIKE $${num}`)
+    values.push(`%${filterParams.nameLike}%`);
+    num++;
+  }
+
 
   return {
     where: `WHERE ${where.join(" AND ")}`,
