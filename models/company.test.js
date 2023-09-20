@@ -118,12 +118,6 @@ describe("findAll", function () {
       }
     ]);
   });
-
-  test("throws 400: with filter where minEmployees > maxEmployees ",
-  async function () {
-    expect(await Company.findAll({ minEmployees: 3, maxEmployees: 2 }))
-    .toThrow(BadRequestError);
-  });
 });
 
 /************************************** get */

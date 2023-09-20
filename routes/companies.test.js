@@ -95,6 +95,39 @@ describe("GET /companies", function () {
           ],
     });
   });
+  // test w/ filter gives expected result
+  test("ok with filter", async function() {
+    const resp = await request(app).get("/companies").query({
+      "nameLike": "1"
+    });
+    expect(resp.body).toEqual({
+      companies: [
+        {
+          handle: "c1",
+          name: "C1",
+          description: "Desc1",
+          numEmployees: 1,
+          logoUrl: "http://c1.img"
+        }
+      ]
+    })
+
+  })
+  // validate min>max => json body w/ error
+  test("error: min > max filter", async function() {
+    const resp = await request(app).get("/companies").query({
+      "maxEmployees": "1",
+      "minEmployees": "3"
+    });
+    expect(resp.statusCode).toEqual(400)
+  })
+  // validate extraneous filter => json body w/ error
+  test("error: extraneous filter param", async function() {
+    const resp = await request(app).get("/companies").query({
+      "size": "large"
+    });
+    expect(resp.statusCode).toEqual(400)
+  })
 });
 
 /************************************** GET /companies/:handle */
