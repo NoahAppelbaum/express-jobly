@@ -58,7 +58,7 @@ class Company {
    * */
 
   static async findAll(filterParams = {}) {
-    const filter = sqlForFilter(filterParams);
+    const filter = Company.sqlForFilter(filterParams);
 
     const companiesRes = await db.query(`
         SELECT handle,
@@ -152,6 +152,55 @@ class Company {
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
   }
+
+  /** Takes in an object of filter params.
+  *
+  * Returns an object with a SQL WHERE clause and an array of values like:
+  *
+  * { where: "WHERE name ILIKE $1", values: ['%name%'] }
+  *
+  * Filter params must be one of nameLike, minEmployees, or maxEmployees.
+  */
+  // FIXME: make these numbers numbers in route, and fix schema. Adjust below:
+  static sqlForFilter(filterParams) {
+  //FIXME: validate this at the end; return w/ ternary
+  const keys = Object.keys(filterParams);
+  if (keys.length === 0) return { where: "", values: [] };
+
+  if (filterParams.minEmployees && filterParams.maxEmployees) {
+    if (+filterParams.minEmployees > +filterParams.maxEmployees) {
+      throw new BadRequestError("minEmployees must be less than maxEmployees.");
+    }
+  }
+
+  const where = [];
+  const values = [];
+  let num = 1;
+
+  if (filterParams.minEmployees) {
+    where.push(`num_employees >= $${num}`);
+    values.push(+filterParams.minEmployees);
+    num++;
+  }
+
+  if (filterParams.maxEmployees) {
+    where.push(`num_employees <= $${num}`);
+    values.push(+filterParams.maxEmployees);
+    num++;
+  }
+
+  if (filterParams.nameLike) {
+    where.push(`name ILIKE $${num}`);
+    values.push(`%${filterParams.nameLike}%`);
+    num++;
+  }
+
+
+  return {
+    where: `WHERE ${where.join(" AND ")}`,
+    values: values,
+  };
+}
 }
 
 

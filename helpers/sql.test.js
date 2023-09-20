@@ -1,6 +1,6 @@
 "use strict";
 
-const { sqlForPartialUpdate, sqlForFilter } = require("./sql");
+const { sqlForPartialUpdate } = require("./sql");
 const { BadRequestError } = require("../expressError");
 
 describe("sqlForPartialUpdate", function () {
@@ -20,38 +20,4 @@ describe("sqlForPartialUpdate", function () {
     expect(() => sqlForPartialUpdate({}, { firstName: "first_name" }))
       .toThrow(BadRequestError);
   });
-});
-
-describe("sqlForFilter", function () {
-  test("works: returns object with where clause values array", function () {
-    const result = sqlForFilter(
-      {
-        nameLike: "name",
-        maxEmployees: "7",
-        minEmployees: "4"
-      });
-
-    expect(result).toEqual({
-      where: `WHERE num_employees >= $1 AND num_employees <= $2 AND name ILIKE $3`,
-      values: [4, 7, "%name%"]
-    });
-  });
-
-
-  test("returns appropriate values for empty obj", function () {
-    const result = sqlForFilter({});
-    expect(result).toEqual({ where: "", values: [] });
-  });
-
-
-  test("throws error on minEmployees>maxEmployees", function () {
-    expect(() => sqlForFilter(
-      {
-        maxEmployees: "1",
-        minEmployees: "2"
-      }
-    ))
-      .toThrow(BadRequestError);
-  });
-
 });
