@@ -36,4 +36,45 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   };
 }
 
-module.exports = { sqlForPartialUpdate };
+/** Takes in an object of filter params.
+ *
+ * Filter params must be one of nameLike, minEmployees, or maxEmployees.
+ *
+ * Returns an object with a SQL WHERE clause and an array of values like:
+ *
+ * { where: "WHERE name ILIKE $1", values: ['%name%'] }
+ */
+
+function sqlForFilter(filterParams) {
+  const keys = Object.keys(dataToUpdate);
+  if (keys.length === 0) return { where: "", values: "" };
+
+  const where = [];
+  const values = []
+  let num = 1;
+
+  if (filterParams.nameLike) {
+    where.push(`name ILIKE $${num}`)
+    values.push(`'%${filterParams.nameLike}%'`);
+    num++;
+  }
+
+  if (filterParams.minEmployees) {
+    where.push(`num_employees >= $${num}`)
+    values.push(+filterParams.minEmployees);
+    num++;
+  }
+
+  if (filterParams.maxEmployees) {
+    where.push(`num_employees <= $${num}`)
+    values.push(+filterParams.maxEmployees);
+    num++;
+  }
+
+  return {
+    where: `WHERE ${where.join(" AND ")}`,
+    values: values,
+  };
+}
+
+module.exports = { sqlForPartialUpdate, sqlForFilter };
