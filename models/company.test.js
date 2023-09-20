@@ -120,6 +120,8 @@ describe("findAll", function () {
   });
 });
 
+//TODO: test max<min Employees here
+
 /************************************** get */
 
 describe("get", function () {

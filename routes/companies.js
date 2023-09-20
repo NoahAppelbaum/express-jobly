@@ -29,7 +29,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
   const validator = jsonschema.validate(
     req.body,
     companyNewSchema,
-    {required: true}
+    { required: true }
   );
   if (!validator.valid) {
     const errs = validator.errors.map(e => e.stack);
@@ -52,16 +52,16 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
+  //TODO: cast min/max employees as numbers here (have to assign, not mutate)
   const validator = jsonschema.validate(
-    req.query,
+    req.query, //<--- the thing we make up here^^
     companyFilterSchema
-    );
-
+  );
   if (!validator.valid) {
     const errs = validator.errors.map(e => e.stack);
     throw new BadRequestError(errs);
   }
-
+ //TODO: pass in a thing; put that expression in a variable
   const companies = await Company.findAll((req.query || {}));
   return res.json({ companies });
 });
@@ -94,7 +94,7 @@ router.patch("/:handle", ensureLoggedIn, async function (req, res, next) {
   const validator = jsonschema.validate(
     req.body,
     companyUpdateSchema,
-    {required:true}
+    { required: true }
   );
   if (!validator.valid) {
     const errs = validator.errors.map(e => e.stack);

@@ -38,12 +38,12 @@ class Company {
                     description,
                     num_employees AS "numEmployees",
                     logo_url AS "logoUrl"`, [
-          handle,
-          name,
-          description,
-          numEmployees,
-          logoUrl,
-        ],
+      handle,
+      name,
+      description,
+      numEmployees,
+      logoUrl,
+    ],
     );
     const company = result.rows[0];
 
@@ -52,10 +52,12 @@ class Company {
 
   /** Find all companies.
    *
+   * Accepts optional object filterParams, to filter results
+   *
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
 
-  static async findAll(filterParams={}) {
+  static async findAll(filterParams = {}) {
     const filter = sqlForFilter(filterParams);
 
     const companiesRes = await db.query(`
@@ -67,7 +69,7 @@ class Company {
         FROM companies
         ${filter.where}
         ORDER BY name`,
-        filter.values);
+      filter.values);
     return companiesRes.rows;
   }
 
@@ -110,11 +112,11 @@ class Company {
 
   static async update(handle, data) {
     const { setCols, values } = sqlForPartialUpdate(
-        data,
-        {
-          numEmployees: "num_employees",
-          logoUrl: "logo_url",
-        });
+      data,
+      {
+        numEmployees: "num_employees",
+        logoUrl: "logo_url",
+      });
     const handleVarIdx = "$" + (values.length + 1);
 
     const querySql = `

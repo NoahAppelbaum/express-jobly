@@ -6,6 +6,7 @@ const { BadRequestError } = require("../expressError");
  * Accepts an object `dataToUpdate`, from which to construct an SQL update
  * query, and an object `jsToSql`, containing key/value pairs of JavaScript
  * variable names, and their corresponding SQL columns in the table.
+ * TODO:Put example input here
  *
  * Returns an object like:
  * {
@@ -27,7 +28,7 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 
   // {firstName: 'Aliya', age: 32} => ['"first_name"=$1', '"age"=$2']
   const cols = keys.map((colName, idx) =>
-      `"${jsToSql[colName] || colName}"=$${idx + 1}`,
+    `"${jsToSql[colName] || colName}"=$${idx + 1}`,
   );
 
   return {
@@ -37,15 +38,16 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 }
 
 /** Takes in an object of filter params.
- *
- * Filter params must be one of nameLike, minEmployees, or maxEmployees.
- *
- * Returns an object with a SQL WHERE clause and an array of values like:
- *
- * { where: "WHERE name ILIKE $1", values: ['%name%'] }
- */
-
+*
+* Returns an object with a SQL WHERE clause and an array of values like:
+*
+* { where: "WHERE name ILIKE $1", values: ['%name%'] }
+*
+* Filter params must be one of nameLike, minEmployees, or maxEmployees.
+*/
+// FIXME: make these numbers numbers in route, and fix schema. Adjust below:
 function sqlForFilter(filterParams) {
+  //FIXME: validate this at the end; return w/ ternary
   const keys = Object.keys(filterParams);
   if (keys.length === 0) return { where: "", values: [] };
 
@@ -56,23 +58,23 @@ function sqlForFilter(filterParams) {
   }
 
   const where = [];
-  const values = []
+  const values = [];
   let num = 1;
 
   if (filterParams.minEmployees) {
-    where.push(`num_employees >= $${num}`)
+    where.push(`num_employees >= $${num}`);
     values.push(+filterParams.minEmployees);
     num++;
   }
 
   if (filterParams.maxEmployees) {
-    where.push(`num_employees <= $${num}`)
+    where.push(`num_employees <= $${num}`);
     values.push(+filterParams.maxEmployees);
     num++;
   }
 
   if (filterParams.nameLike) {
-    where.push(`name ILIKE $${num}`)
+    where.push(`name ILIKE $${num}`);
     values.push(`%${filterParams.nameLike}%`);
     num++;
   }
