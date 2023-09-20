@@ -28,6 +28,7 @@ const router = express.Router();
  **/
 
 router.post("/", ensureLoggedIn, async function (req, res, next) {
+  // TODO: do we need to check if isAdmin -- middleware?
   const validator = jsonschema.validate(
       req.body,
       userNewSchema,
