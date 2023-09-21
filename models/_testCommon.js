@@ -41,9 +41,9 @@ async function commonBeforeAll() {
 
 
   const j1 = await db.query(`
-  SELECT id
-    FROM jobs
-    WHERE title = 'doctor 1'
+    SELECT id
+      FROM jobs
+      WHERE title = 'j1'
   `);
 
   j1Id = j1.rows[0].id;

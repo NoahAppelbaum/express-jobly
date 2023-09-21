@@ -26,7 +26,7 @@ class Job {
                     id,
                     title,
                     salary,
-                    equity
+                    equity,
                     company_handle AS "companyHandle"`, [
       title,
       salary,

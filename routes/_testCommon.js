@@ -73,7 +73,7 @@ async function commonBeforeAll() {
     isAdmin: true,
   });
 
-  await Job.create(
+  const j1 = await Job.create(
     {
       title: "j1",
       salary: 100,
@@ -95,13 +95,7 @@ async function commonBeforeAll() {
       companyHandle: "c1",
     });
 
-  const j1 = await db.query(`
-  SELECT id
-    FROM jobs
-    WHERE title = 'doctor 1'
-  `);
-
-  j1Id = j1.rows[0].id;
+  j1Id = j1.id;
 }
 
 
