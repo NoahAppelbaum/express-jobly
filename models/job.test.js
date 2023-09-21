@@ -15,6 +15,19 @@ beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
 
+let j1Id
+async function setJ1Id(){
+  const j1 = await db.query(`
+  SELECT id
+    FROM jobs
+    WHERE title = 'doctor 1'
+  `);
+
+  j1Id = j1.rows[0].id;
+  }
+setJ1Id();
+
+
 /************************************** create */
 
 describe("create", function () {
@@ -166,7 +179,7 @@ describe("findAll", function () {
 
 describe("get", function () {
   test("works", async function () {
-    let job = await Job.get(TODO: id);
+    let job = await Job.get(j1Id);
     expect(job).toEqual(
       {
         id: expect.any(Number),
@@ -198,7 +211,7 @@ describe("update", function () {
   };
 
   test("works", async function () {
-    let job = await Job.update(TODO: id, updateData);
+    let job = await Job.update(j1Id, updateData);
     expect(job).toEqual({
       id: expect.any(Number),
       ...updateData,
@@ -208,7 +221,7 @@ describe("update", function () {
     const result = await db.query(
           `SELECT id, title, salary, equity, company_handle
            FROM jobs
-           WHERE id = $1`, [TODO: id]);
+           WHERE id = $1`, [j1Id]);
     expect(result.rows).toEqual([{
       id: expect.any(Number),
       title: "skiier",
@@ -225,7 +238,7 @@ describe("update", function () {
       equity: null
     };
 
-    let job = await Job.update(TODO: id, updateDataSetNulls);
+    let job = await Job.update(j1Id, updateDataSetNulls);
     expect(job).toEqual({
       id: expect.any(Number),
       ...updateDataSetNulls,
@@ -235,7 +248,7 @@ describe("update", function () {
     const result = await db.query(
           `SELECT id, title, salary, equity, company_handle
            FROM jobs
-           WHERE id = $1`, [TODO: id]);
+           WHERE id = $1`, [j1Id]);
     expect(result.rows).toEqual([{
       id: expect.any(Number),
       title: "hat maker",
@@ -247,7 +260,7 @@ describe("update", function () {
 
   test("bad request if company_handle in update data", async function () {
     try {
-      await Job.update(TODO: id, {
+      await Job.update(j1Id, {
         title: "shoe shiner",
         company_handle: "c3"
       });
@@ -269,7 +282,7 @@ describe("update", function () {
 
   test("bad request with no data", async function () {
     try {
-      await Job.update(TODO: id, {});
+      await Job.update(j1Id, {});
       throw new Error("fail test, you shouldn't get here");
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy(); // TODO: is this the same as checking toThrow(BadRequestError)
@@ -281,9 +294,9 @@ describe("update", function () {
 
 describe("remove", function () {
   test("works", async function () {
-    await Job.remove(TODO: id);
+    await Job.remove(j1Id);
     const res = await db.query(
-        "SELECT id FROM jobs WHERE id=$1", [TODO: id]);
+        "SELECT id FROM jobs WHERE id=$1", [j1Id]);
     expect(res.rows.length).toEqual(0);
   });
 
