@@ -96,7 +96,7 @@ router.get("/:handle", async function (req, res, next) {
  *
  * Returns { handle, name, description, numEmployees, logo_url }
  *
- * Authorization required: login
+ * Authorization required: login //TODO: Update docstrings for admin!!
  */
 
 router.patch("/:handle", ensureAdmin, async function (req, res, next) {

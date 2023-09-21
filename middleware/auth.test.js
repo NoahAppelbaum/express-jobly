@@ -5,6 +5,8 @@ const { UnauthorizedError } = require("../expressError");
 const {
   authenticateJWT,
   ensureLoggedIn,
+  ensureAdmin,
+  ensureSelfOrAdmin
 } = require("./auth");
 
 
@@ -65,6 +67,77 @@ describe("ensureLoggedIn", function () {
     const req = {};
     const res = { locals: { user: { } } };
     expect(() => ensureLoggedIn(req, res, next))
+        .toThrow(UnauthorizedError);
+  });
+});
+
+describe("ensureAdmin", function () {
+  test("works", function () {
+    const req = {};
+    const res = { locals: { user: { isAdmin: true } } };
+    ensureAdmin(req, res, next);
+  });
+
+  test("unauth if no login", function () {
+    const req = {};
+    const res = { locals: {} };
+    expect(() => ensureAdmin(req, res, next))
+        .toThrow(UnauthorizedError);
+  });
+
+  test("unauth if non-admin", function () {
+    const req = {};
+    const res = { locals: { user: { username: "test", isAdmin: false} } };
+    expect(() => ensureAdmin(req, res, next))
+        .toThrow(UnauthorizedError);
+  });
+
+  test("unauth if no isAdmin key in res.locals", function () {
+    const req = {};
+    const res = { locals: { user: { username: "test" } } };
+    expect(() => ensureAdmin(req, res, next))
+        .toThrow(UnauthorizedError);
+  });
+
+  test("unauth for bad token data/attack", function () {
+    const req = {};
+    const res = { locals: { user: { username: "test", isAdmin: "string"} } };
+    expect(() => ensureAdmin(req, res, next))
+        .toThrow(UnauthorizedError);
+  });
+});
+
+describe("ensureSelfOrAdmin", function () {
+  test("works for target user", function () {
+    const req = { params: { username: "test" } };
+    const res = { locals: { user: { username: "test", isAdmin: false } } };
+    ensureSelfOrAdmin(req, res, next);
+  });
+
+  test("works for non-target admin", function () {
+    const req = { params: { username: "test" } };
+    const res = { locals: { user: { username: "admin", isAdmin: true } } };
+    ensureSelfOrAdmin(req, res, next);
+  });
+
+  test("unauth if no login", function () {
+    const req = { params: { username: "test" } };
+    const res = { locals: {} };
+    expect(() => ensureSelfOrAdmin(req, res, next))
+        .toThrow(UnauthorizedError);
+  });
+
+  test("unauth for non-admin, non-target user", function () {
+    const req = { params: { username: "test" } };
+    const res = { locals: { user: { username: "wrong", isAdmin: false } } };
+    expect(() => ensureSelfOrAdmin(req, res, next))
+        .toThrow(UnauthorizedError);
+  });
+
+  test("unauth for bad token data/attack", function () {
+    const req = { params: { username: "test" } };
+    const res = { locals: { user: { username: "wrong", isAdmin: "string"} } };
+    expect(() => ensureSelfOrAdmin(req, res, next))
         .toThrow(UnauthorizedError);
   });
 });

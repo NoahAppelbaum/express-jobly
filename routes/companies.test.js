@@ -30,7 +30,7 @@ describe("POST /companies", function () {
     numEmployees: 10,
   };
 
-  test("ok for admins", async function () {
+  test("works for admins", async function () {
     const resp = await request(app)
         .post("/companies")
         .send(newCompany)
@@ -41,11 +41,19 @@ describe("POST /companies", function () {
     });
   });
 
-  test("throws 401 if user is not admin", async function () {
+  test("unauth for non-admin", async function () {
     const resp = await request(app)
         .post("/companies")
         .send(newCompany)
         .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+
+  });
+
+  test("unauth for anon", async function () {
+    const resp = await request(app)
+        .post("/companies")
+        .send(newCompany);
     expect(resp.statusCode).toEqual(401);
 
   });
@@ -123,7 +131,7 @@ describe("GET /companies", function () {
     })
 
   })
-  // validate min>max => json body w/ error
+
   test("error: min > max filter", async function() {
     const resp = await request(app).get("/companies").query({
       "maxEmployees": "1",
@@ -131,7 +139,7 @@ describe("GET /companies", function () {
     });
     expect(resp.statusCode).toEqual(400)
   })
-  // validate extraneous filter => json body w/ error
+
   test("error: extraneous filter param", async function() {
     const resp = await request(app).get("/companies").query({
       "size": "large"
@@ -196,7 +204,7 @@ describe("PATCH /companies/:handle", function () {
     });
   });
 
-  test("throws 401 if user is not admin", async function () {
+  test("unauth for non-admin", async function () {
     const resp = await request(app)
         .patch(`/companies/c1`)
         .send({
@@ -256,7 +264,7 @@ describe("DELETE /companies/:handle", function () {
     expect(resp.body).toEqual({ deleted: "c1" });
   });
 
-  test("throws 401 if user is not admin", async function () {
+  test("unauth for non-admin", async function () {
     const resp = await request(app)
         .delete(`/companies/c1`)
         .set("authorization", `Bearer ${u1Token}`);
