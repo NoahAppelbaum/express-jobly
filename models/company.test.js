@@ -120,8 +120,6 @@ describe("findAll", function () {
   });
 });
 
-//TODO: test max<min Employees here
-
 /************************************** get */
 
 describe("get", function () {
@@ -249,8 +247,8 @@ describe("sqlForFilter", function () {
     const result = Company.sqlForFilter(
       {
         nameLike: "name",
-        maxEmployees: "7",
-        minEmployees: "4"
+        maxEmployees: 7,
+        minEmployees: 4
       });
 
     expect(result).toEqual({
@@ -269,8 +267,8 @@ describe("sqlForFilter", function () {
   test("throws error on minEmployees>maxEmployees", function () {
     expect(() => Company.sqlForFilter(
       {
-        maxEmployees: "1",
-        minEmployees: "2"
+        maxEmployees: 1,
+        minEmployees: 2
       }
     ))
       .toThrow(BadRequestError);

@@ -161,46 +161,42 @@ class Company {
   *
   * Filter params must be one of nameLike, minEmployees, or maxEmployees.
   */
-  // FIXME: make these numbers numbers in route, and fix schema. Adjust below:
   static sqlForFilter(filterParams) {
-  //FIXME: validate this at the end; return w/ ternary
-  const keys = Object.keys(filterParams);
-  if (keys.length === 0) return { where: "", values: [] };
-
-  if (filterParams.minEmployees && filterParams.maxEmployees) {
-    if (+filterParams.minEmployees > +filterParams.maxEmployees) {
-      throw new BadRequestError("minEmployees must be less than maxEmployees.");
+    if (filterParams.minEmployees && filterParams.maxEmployees) {
+      if (filterParams.minEmployees > filterParams.maxEmployees) {
+        throw new BadRequestError("minEmployees must be less than maxEmployees.");
+      }
     }
+
+    const where = [];
+    const values = [];
+    let num = 1;
+
+    if (filterParams.minEmployees) {
+      where.push(`num_employees >= $${num}`);
+      values.push(filterParams.minEmployees);
+      num++;
+    }
+
+    if (filterParams.maxEmployees) {
+      where.push(`num_employees <= $${num}`);
+      values.push(filterParams.maxEmployees);
+      num++;
+    }
+
+    if (filterParams.nameLike) {
+      where.push(`name ILIKE $${num}`);
+      values.push(`%${filterParams.nameLike}%`);
+      num++;
+    }
+
+    return (values.length
+      ? {
+      where: `WHERE ${where.join(" AND ")}`,
+      values: values,
+      }
+      : { where: "", values: [] });
   }
-
-  const where = [];
-  const values = [];
-  let num = 1;
-
-  if (filterParams.minEmployees) {
-    where.push(`num_employees >= $${num}`);
-    values.push(+filterParams.minEmployees);
-    num++;
-  }
-
-  if (filterParams.maxEmployees) {
-    where.push(`num_employees <= $${num}`);
-    values.push(+filterParams.maxEmployees);
-    num++;
-  }
-
-  if (filterParams.nameLike) {
-    where.push(`name ILIKE $${num}`);
-    values.push(`%${filterParams.nameLike}%`);
-    num++;
-  }
-
-
-  return {
-    where: `WHERE ${where.join(" AND ")}`,
-    values: values,
-  };
-}
 }
 
 

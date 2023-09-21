@@ -6,7 +6,8 @@ const { BadRequestError } = require("../expressError");
  * Accepts an object `dataToUpdate`, from which to construct an SQL update
  * query, and an object `jsToSql`, containing key/value pairs of JavaScript
  * variable names, and their corresponding SQL columns in the table.
- * TODO:Put example input here
+ *
+ * {columnName: value}, {columnName: column_name}
  *
  * Returns an object like:
  * {
