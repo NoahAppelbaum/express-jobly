@@ -10,12 +10,14 @@ const {
   commonAfterAll,
 } = require("./_testCommon.js");
 
+let j1Id;
+
 beforeAll(commonBeforeAll);
+beforeAll(setJ1Id);
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
 
-let j1Id
 async function setJ1Id(){
   const j1 = await db.query(`
   SELECT id
@@ -25,7 +27,6 @@ async function setJ1Id(){
 
   j1Id = j1.rows[0].id;
   }
-setJ1Id();
 
 
 /************************************** create */

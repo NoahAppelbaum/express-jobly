@@ -38,7 +38,7 @@ async function commonBeforeAll() {
             ('doctor 2', 200, .1, 'c1'),
             ('doctor 3', 300, .2, 'c1')`);
 }
-
+//TODO: Refactor this^ to just be j1, j2, j3 for title. Here and in tests
 async function commonBeforeEach() {
   await db.query("BEGIN");
 }
