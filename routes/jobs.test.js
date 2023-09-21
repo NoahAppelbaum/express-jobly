@@ -2,7 +2,6 @@
 
 const request = require("supertest");
 
-const db = require("../db");
 const app = require("../app");
 
 const {
@@ -12,25 +11,13 @@ const {
   commonAfterAll,
   u1Token,
   adminToken,
+  j1Id
 } = require("./_testCommon");
 
-let j1Id;
-
 beforeAll(commonBeforeAll);
-beforeAll(setJ1Id);
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
-
-async function setJ1Id(){
-  const j1 = await db.query(`
-  SELECT id
-    FROM jobs
-    WHERE title = 'doctor 1'
-  `);
-
-  j1Id = j1.rows[0].id;
-  }
 
 
 /************************************** POST /jobs */

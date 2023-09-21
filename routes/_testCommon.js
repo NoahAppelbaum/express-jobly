@@ -5,6 +5,7 @@ const User = require("../models/user");
 const Company = require("../models/company");
 const Job = require("../models/job")
 const { createToken } = require("../helpers/tokens");
+let j1Id;
 
 async function commonBeforeAll() {
   // noinspection SqlWithoutWhere
@@ -93,6 +94,14 @@ async function commonBeforeAll() {
       equity: 0.2,
       companyHandle: "c1",
     });
+
+  const j1 = await db.query(`
+  SELECT id
+    FROM jobs
+    WHERE title = 'doctor 1'
+  `);
+
+  j1Id = j1.rows[0].id;
 }
 
 
@@ -122,4 +131,5 @@ module.exports = {
   u1Token,
   u2Token,
   adminToken,
+  j1Id,
 };

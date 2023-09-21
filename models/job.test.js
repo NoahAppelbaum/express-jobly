@@ -8,32 +8,21 @@ const {
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
+  j1Id
 } = require("./_testCommon.js");
 
-let j1Id;
 
 beforeAll(commonBeforeAll);
-beforeAll(setJ1Id);
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
-
-async function setJ1Id(){
-  const j1 = await db.query(`
-  SELECT id
-    FROM jobs
-    WHERE title = 'doctor 1'
-  `);
-
-  j1Id = j1.rows[0].id;
-  }
 
 
 /************************************** create */
 
 describe("create", function () {
   const newJob = {
-    title: "doctor",
+    title: "new",
     salary: 100,
     equity: 0.1,
     company_handle: "c1",
@@ -43,7 +32,7 @@ describe("create", function () {
     let job = await Job.create(newJob);
     expect(job).toEqual({
       id: expect.any(Number),
-      title: "doctor",
+      title: "new",
       salary: 100,
       equity: "0.1",
       company_handle: "c1",
@@ -58,7 +47,7 @@ describe("create", function () {
     expect(result.rows).toEqual([
       {
         id: expect.any(Number),
-        title: "doctor",
+        title: "new",
         salary: 100,
         equity: "0.1",
         company_handle: "c1",
@@ -79,7 +68,7 @@ describe("create", function () {
     try {
       await Job.create(
         {
-          title: "doctor",
+          title: "new",
           salary: 100,
           equity: 0,
           company_handle: "doesntexist",
@@ -100,21 +89,21 @@ describe("findAll", function () {
     expect(jobs).toEqual([
       {
         id: expect.any(Number),
-        title: "doctor 1",
+        title: "j1",
         salary: 100,
         equity: "0",
         company_handle: "c1",
       },
       {
         id: expect.any(Number),
-        title: "doctor 2",
+        title: "j2",
         salary: 200,
         equity: "0.1",
         company_handle: "c1",
       },
       {
         id: expect.any(Number),
-        title: "doctor 3",
+        title: "j3",
         salary: 300,
         equity: "0.2",
         company_handle: "c1",
@@ -127,7 +116,7 @@ describe("findAll", function () {
     expect(jobs).toEqual([
       {
         id: expect.any(Number),
-        title: "doctor 3",
+        title: "j3",
         salary: 300,
         equity: "0.2",
         company_handle: "c1",
@@ -140,14 +129,14 @@ describe("findAll", function () {
     expect(jobs).toEqual([
       {
         id: expect.any(Number),
-        title: "doctor 2",
+        title: "j2",
         salary: 200,
         equity: "0.1",
         company_handle: "c1",
       },
       {
         id: expect.any(Number),
-        title: "doctor 3",
+        title: "j3",
         salary: 300,
         equity: "0.2",
         company_handle: "c1",
@@ -160,14 +149,14 @@ describe("findAll", function () {
     expect(jobs).toEqual([
       {
         id: expect.any(Number),
-        title: "doctor 2",
+        title: "j2",
         salary: 200,
         equity: "0.1",
         company_handle: "c1",
       },
       {
         id: expect.any(Number),
-        title: "doctor 3",
+        title: "j3",
         salary: 300,
         equity: "0.2",
         company_handle: "c1",
@@ -184,7 +173,7 @@ describe("get", function () {
     expect(job).toEqual(
       {
         id: expect.any(Number),
-        title: "doctor 1",
+        title: "j1",
         salary: 100,
         equity: "0",
         company_handle: "c1",
