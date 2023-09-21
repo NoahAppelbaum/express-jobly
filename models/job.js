@@ -16,24 +16,29 @@ class Job {
 
   static async create({ title, salary, equity, companyHandle }) {
     // TODO: do we want to allow dupes?
-    const result = await db.query(`
-                INSERT INTO jobs (title,
-                                       salary,
-                                       equity,
-                                       company_handle)
-                VALUES ($1, $2, $3, $4)
-                RETURNING
-                    id,
-                    title,
-                    salary,
-                    equity,
-                    company_handle AS "companyHandle"`, [
-      title,
-      salary,
-      equity,
-      companyHandle
-    ],
-    );
+    let result;
+    try{
+      result = await db.query(`
+                  INSERT INTO jobs (title,
+                                        salary,
+                                        equity,
+                                        company_handle)
+                  VALUES ($1, $2, $3, $4)
+                  RETURNING
+                      id,
+                      title,
+                      salary,
+                      equity,
+                      company_handle AS "companyHandle"`, [
+        title,
+        salary,
+        equity,
+        companyHandle
+      ],
+      );
+    } catch (err) {
+      throw new BadRequestError("Ensure proper data and company handle")
+    }
     const job = result.rows[0];
 
     return job;
@@ -74,7 +79,7 @@ class Job {
         SELECT id,
                title,
                salary,
-               equity
+               equity,
                company_handle AS "companyHandle"
         FROM jobs
         WHERE id = $1`, [id]);
@@ -101,9 +106,8 @@ class Job {
   static async update(id, data) {
     const { setCols, values } = sqlForPartialUpdate(
       data,
-      {
-        companyHandle: "company_handle",
-      });
+      {}
+    );
     const handleVarIdx = "$" + (values.length + 1);
 
     const querySql = `
@@ -126,7 +130,7 @@ class Job {
 
   /** Delete given job from database; returns undefined.
    *
-   * Throws NotFoundError if company not found.
+   * Throws NotFoundError if job not found.
    **/
 
   static async remove(id) {
@@ -149,35 +153,29 @@ class Job {
   * Filter params must be one of nameLike, minEmployees, or maxEmployees.
   */
   static sqlForFilter(filterParams) {
-    if (filterParams.minEmployees && filterParams.maxEmployees) {
-      if (filterParams.minEmployees > filterParams.maxEmployees) {
-        throw new BadRequestError("minEmployees must be less than maxEmployees.");
-      }
-    }
 
     const where = [];
     const values = [];
     let num = 1;
 
-    if (filterParams.minEmployees) {
-      where.push(`num_employees >= $${num}`);
-      values.push(filterParams.minEmployees);
+    if (filterParams.title) {
+      where.push(`title ILIKE $${num}`);
+      values.push(`%${filterParams.title}%`);
       num++;
     }
 
-    if (filterParams.maxEmployees) {
-      where.push(`num_employees <= $${num}`);
-      values.push(filterParams.maxEmployees);
+    if (filterParams.minSalary) {
+      where.push(`salary >= $${num}`);
+      values.push(filterParams.minSalary);
       num++;
     }
 
-    if (filterParams.nameLike) {
-      where.push(`name ILIKE $${num}`);
-      values.push(`%${filterParams.nameLike}%`);
-      num++;
+    if (filterParams.hasEquity === true) {
+      where.push(`equity > 0`);
+      num++
     }
 
-    return (values.length
+    return (num > 1
       ? {
       where: `WHERE ${where.join(" AND ")}`,
       values: values,
