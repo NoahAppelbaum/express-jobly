@@ -11,7 +11,7 @@ const {
   commonAfterAll,
   u1Token,
   adminToken,
-  jobIDs
+  jobIds
 } = require("./_testCommon");
 
 beforeAll(commonBeforeAll);
@@ -187,7 +187,7 @@ describe("GET /jobs", function () {
 
 describe("GET /jobs/:id", function () {
   test("works for anon", async function () {
-    const resp = await request(app).get(`/jobs/${jobIDs[0]}`);
+    const resp = await request(app).get(`/jobs/${jobIds[0]}`);
     expect(resp.body).toEqual({
       job: {
         id: expect.any(Number),
@@ -210,7 +210,7 @@ describe("GET /jobs/:id", function () {
 describe("PATCH /jobs/:id", function () {
   test("works for admins", async function () {
     const resp = await request(app)
-        .patch(`/jobs/${jobIDs[0]}`)
+        .patch(`/jobs/${jobIds[0]}`)
         .send({
           title: "J1-new",
         })
@@ -228,7 +228,7 @@ describe("PATCH /jobs/:id", function () {
 
   test("unauth for non-admin", async function () {
     const resp = await request(app)
-        .patch(`/jobs/${jobIDs[0]}`)
+        .patch(`/jobs/${jobIds[0]}`)
         .send({
           title: "J1-new",
         })
@@ -238,7 +238,7 @@ describe("PATCH /jobs/:id", function () {
 
   test("unauth for anon", async function () {
     const resp = await request(app)
-        .patch(`/jobs/${jobIDs[0]}`)
+        .patch(`/jobs/${jobIds[0]}`)
         .send({
           title: "J1-new",
         });
@@ -257,7 +257,7 @@ describe("PATCH /jobs/:id", function () {
 
   test("bad request on companyHandle change attempt", async function () {
     const resp = await request(app)
-        .patch(`/jobs/${jobIDs[0]}`)
+        .patch(`/jobs/${jobIds[0]}`)
         .send({
           companyHandle: "bad request",
         })
@@ -267,7 +267,7 @@ describe("PATCH /jobs/:id", function () {
 
   test("bad request on invalid data", async function () {
     const resp = await request(app)
-        .patch(`/jobs/${jobIDs[0]}`)
+        .patch(`/jobs/${jobIds[0]}`)
         .send({
           title: 7,
         })
@@ -281,21 +281,21 @@ describe("PATCH /jobs/:id", function () {
 describe("DELETE /jobs/:handle", function () {
   test("works for admins", async function () {
     const resp = await request(app)
-        .delete(`/jobs/${jobIDs[0]}`)
+        .delete(`/jobs/${jobIds[0]}`)
         .set("authorization", `Bearer ${adminToken}`);
-    expect(resp.body).toEqual({ deleted: `${jobIDs[0]}` });
+    expect(resp.body).toEqual({ deleted: `${jobIds[0]}` });
   });
 
   test("unauth for non-admin", async function () {
     const resp = await request(app)
-        .delete(`/jobs/${jobIDs[0]}`)
+        .delete(`/jobs/${jobIds[0]}`)
         .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(401);
   });
 
   test("unauth for anon", async function () {
     const resp = await request(app)
-        .delete(`/jobs/${jobIDs[0]}`);
+        .delete(`/jobs/${jobIds[0]}`);
     expect(resp.statusCode).toEqual(401);
   });
 

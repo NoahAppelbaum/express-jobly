@@ -5,7 +5,7 @@ const User = require("../models/user");
 const Company = require("../models/company");
 const Job = require("../models/job")
 const { createToken } = require("../helpers/tokens");
-const jobIDs = [];
+const jobIds = [];
 
 async function commonBeforeAll() {
   // noinspection SqlWithoutWhere
@@ -14,6 +14,8 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM companies");
   // noinspection SqlWithoutWhere
   await db.query("DELETE FROM jobs");
+  // noinspection SqlWithoutWhere
+  await db.query("DELETE FROM applications");
 
   await Company.create(
       {
@@ -80,14 +82,14 @@ async function commonBeforeAll() {
       equity: 0,
       companyHandle: "c1"
     });
-  await Job.create(
+  const j2 = await Job.create(
     {
       title: "j2",
       salary: 200,
       equity: 0.1,
       companyHandle: "c1",
     });
-  await Job.create(
+  const j3 = await Job.create(
     {
       title: "j3",
       salary: 300,
@@ -95,7 +97,10 @@ async function commonBeforeAll() {
       companyHandle: "c1",
     });
 
-  jobIDs.push(j1.id);
+  jobIds.push(j1.id, j2.id, j3.id);
+  //USER u1 HAS APPLIED FOR jobIds[1] and jobIds[2]
+  await User.apply("u1", jobIds[1]);
+  await User.apply("u2", jobIds[2])
 }
 
 
@@ -125,5 +130,5 @@ module.exports = {
   u1Token,
   u2Token,
   adminToken,
-  jobIDs,
+  jobIds,
 };

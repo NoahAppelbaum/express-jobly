@@ -8,7 +8,7 @@ const {
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-  jobIDs,
+  jobIds,
 } = require("./_testCommon.js");
 
 beforeAll(commonBeforeAll);
@@ -183,7 +183,7 @@ describe("findAll", function () {
 
 describe("get", function () {
   test("works", async function () {
-    let job = await Job.get(jobIDs[0]);
+    let job = await Job.get(jobIds[0]);
     expect(job).toEqual(
       {
         id: expect.any(Number),
@@ -217,7 +217,7 @@ describe("update", function () {
   };
 
   test("works", async function () {
-    let job = await Job.update(jobIDs[0], updateData);
+    let job = await Job.update(jobIds[0], updateData);
     expect(job).toEqual({
       id: expect.any(Number),
       title: "skiier",
@@ -229,7 +229,7 @@ describe("update", function () {
     const result = await db.query(
           `SELECT id, title, salary, equity, company_handle AS "companyHandle"
            FROM jobs
-           WHERE id = $1`, [jobIDs[0]]);
+           WHERE id = $1`, [jobIds[0]]);
     expect(result.rows).toEqual([{
       id: expect.any(Number),
       title: "skiier",
@@ -246,7 +246,7 @@ describe("update", function () {
       equity: null
     };
 
-    let job = await Job.update(jobIDs[0], updateDataSetNulls);
+    let job = await Job.update(jobIds[0], updateDataSetNulls);
     expect(job).toEqual({
       id: expect.any(Number),
       ...updateDataSetNulls,
@@ -256,7 +256,7 @@ describe("update", function () {
     const result = await db.query(
           `SELECT id, title, salary, equity, company_handle AS "companyHandle"
            FROM jobs
-           WHERE id = $1`, [jobIDs[0]]);
+           WHERE id = $1`, [jobIds[0]]);
     expect(result.rows).toEqual([{
       id: expect.any(Number),
       title: "hat maker",
@@ -278,7 +278,7 @@ describe("update", function () {
 
   test("bad request with no data", async function () {
     try {
-      await Job.update(jobIDs[0], {});
+      await Job.update(jobIds[0], {});
       throw new Error("fail test, you shouldn't get here");
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy(); // TODO: is this the same as checking toThrow(BadRequestError)
@@ -290,9 +290,9 @@ describe("update", function () {
 
 describe("remove", function () {
   test("works", async function () {
-    await Job.remove(jobIDs[0]);
+    await Job.remove(jobIds[0]);
     const res = await db.query(
-        "SELECT id FROM jobs WHERE id=$1", [jobIDs[0]]);
+        "SELECT id FROM jobs WHERE id=$1", [jobIds[0]]);
     expect(res.rows.length).toEqual(0);
   });
 

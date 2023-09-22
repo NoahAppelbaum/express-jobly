@@ -205,6 +205,15 @@ class User {
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
   }
+
+  /** Make a job application with username, jobId
+   *
+   * Returns { username, jobID }
+   */
+
+  static async apply(username, jobId){
+
+  }
 }
 
 
