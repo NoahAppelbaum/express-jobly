@@ -219,7 +219,7 @@ class User {
    */
 
   static async apply(username, jobId){
-
+    
   }
 }
 

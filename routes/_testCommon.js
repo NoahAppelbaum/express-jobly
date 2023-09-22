@@ -100,7 +100,7 @@ async function commonBeforeAll() {
   jobIds.push(j1.id, j2.id, j3.id);
   //USER u1 HAS APPLIED FOR jobIds[1] and jobIds[2]
   await User.apply("u1", jobIds[1]);
-  await User.apply("u2", jobIds[2])
+  await User.apply("u1", jobIds[2])
 }
 
 

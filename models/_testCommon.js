@@ -51,13 +51,15 @@ async function commonBeforeAll() {
 
   const ids = jobs.rows.map(job => job.id);
   jobIds.push(...ids);
+
+  //USER u1 HAS APPLIED FOR jobIds[1] and jobIds[2]
+  // Elise: I moved this into beforeAll
+  await db.query(`
+  INSERT INTO applications(username, job_id)
+  VALUES ('u1', ${jobIds[1]}),
+  ('u1', ${jobIds[2]})`);
 }
 
-//USER u1 HAS APPLIED FOR jobIds[1] and jobIds[2]
-await db.query(`
-INSERT INTO applications(username, job_id)
-VALUES ('u1', ${jobIds[1]}),
-('u1', ${jobIds[2]})`);
 
 async function commonBeforeEach() {
   await db.query("BEGIN");

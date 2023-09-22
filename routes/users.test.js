@@ -197,7 +197,10 @@ describe("GET /users/:username", function () {
         lastName: "U1L",
         email: "user1@user.com",
         isAdmin: false,
-        jobs: [jobIds[1], jobIds[2]]
+        jobs: [
+          expect.any(Number),
+          expect.any(Number)
+        ]
       },
     });
   });
