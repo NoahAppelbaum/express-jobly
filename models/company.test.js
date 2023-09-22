@@ -123,7 +123,7 @@ describe("findAll", function () {
 /************************************** get */
 
 describe("get", function () {
-  test("works", async function () {
+  test("works w/ jobs", async function () {
     let company = await Company.get("c1");
     expect(company).toEqual({
       handle: "c1",
@@ -131,6 +131,41 @@ describe("get", function () {
       description: "Desc1",
       numEmployees: 1,
       logoUrl: "http://c1.img",
+      jobs: [
+        {
+          id: expect.any(Number),
+          title: "j1",
+          salary: 100,
+          equity: "0",
+          companyHandle: "c1"
+        },
+        {
+          id: expect.any(Number),
+          title: "j2",
+          salary: 200,
+          equity: "0.1",
+          companyHandle: "c1",
+        },
+        {
+          id: expect.any(Number),
+          title: "j3",
+          salary: 300,
+          equity: "0.2",
+          companyHandle: "c1",
+        },
+      ]
+    });
+  });
+
+  test("works w/o jobs", async function () {
+    let company = await Company.get("c2");
+    expect(company).toEqual({
+      handle: "c2",
+      name: "C2",
+      description: "Desc2",
+      numEmployees: 2,
+      logoUrl: "http://c2.img",
+      jobs: []
     });
   });
 

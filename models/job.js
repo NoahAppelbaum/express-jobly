@@ -15,7 +15,7 @@ class Job {
    * */
 
   static async create({ title, salary, equity=0, companyHandle }) {
-    // TODO: do we want to allow dupes?
+    // TODO: Question for PM: do we want to allow dupes?
     let result;
     try{
       result = await db.query(`
