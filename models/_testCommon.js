@@ -42,6 +42,7 @@ async function commonBeforeAll() {
             ('j2', 200, .1, 'c1'),
             ('j3', 300, .2, 'c1')`);
 
+            //FIXME: I think something I did here is breaking tests:
   const jobs = await db.query(`
   SELECT id
   FROM jobs
