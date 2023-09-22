@@ -37,7 +37,13 @@ describe("POST /jobs", function () {
         .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({
-      job: newJob,
+      job: {
+        id: expect.any(Number),
+        title: "new",
+        salary: 1000,
+        equity: "0",
+        companyHandle: "c1"
+      },
     });
   });
 
@@ -102,18 +108,21 @@ describe("GET /jobs", function () {
       jobs:
           [
             {
+              id: expect.any(Number),
               title: "j1",
               salary: 100,
               equity: "0",
               companyHandle: "c1"
             },
             {
+              id: expect.any(Number),
               title: "j2",
               salary: 200,
               equity: "0.1",
               companyHandle: "c1",
             },
             {
+              id: expect.any(Number),
               title: "j3",
               salary: 300,
               equity: "0.2",
@@ -130,6 +139,7 @@ describe("GET /jobs", function () {
     expect(resp.body).toEqual({
       jobs: [
         {
+          id: expect.any(Number),
           title: "j1",
           salary: 100,
           equity: "0",
@@ -147,12 +157,14 @@ describe("GET /jobs", function () {
     expect(resp.body).toEqual({
       jobs: [
         {
+          id: expect.any(Number),
           title: "j2",
           salary: 200,
           equity: "0.1",
           companyHandle: "c1",
         },
         {
+          id: expect.any(Number),
           title: "j3",
           salary: 300,
           equity: "0.2",
@@ -177,9 +189,10 @@ describe("GET /jobs/:id", function () {
     const resp = await request(app).get(`/jobs/${jobIDs[0]}`);
     expect(resp.body).toEqual({
       job: {
+        id: expect.any(Number),
         title: "j1",
         salary: 100,
-        equity: 0,
+        equity: "0",
         companyHandle: "c1"
       },
     });
@@ -206,7 +219,7 @@ describe("PATCH /jobs/:id", function () {
         id: expect.any(Number),
         title: "J1-new",
         salary: 100,
-        equity: 0,
+        equity: "0",
         companyHandle: "c1"
       },
     });
@@ -231,9 +244,9 @@ describe("PATCH /jobs/:id", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("not found on no such company", async function () {
+  test("not found on no such job", async function () {
     const resp = await request(app)
-        .patch(`/jobs/3000`)
+        .patch(`/jobs/3000000`)
         .send({
           title: "new 3000",
         })
@@ -269,7 +282,7 @@ describe("DELETE /jobs/:handle", function () {
     const resp = await request(app)
         .delete(`/jobs/${jobIDs[0]}`)
         .set("authorization", `Bearer ${adminToken}`);
-    expect(resp.body).toEqual({ deleted: jobIDs[0] });
+    expect(resp.body).toEqual({ deleted: `${jobIDs[0]}` });
   });
 
   test("unauth for non-admin", async function () {

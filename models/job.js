@@ -14,7 +14,7 @@ class Job {
    * Returns { id, title, salary, equity, companyHandle }
    * */
 
-  static async create({ title, salary, equity, companyHandle }) {
+  static async create({ title, salary, equity=0, companyHandle }) {
     // TODO: do we want to allow dupes?
     let result;
     try{
