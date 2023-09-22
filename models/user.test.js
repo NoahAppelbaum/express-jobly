@@ -248,7 +248,7 @@ describe("apply", function () {
   });
 
   test("not found if no such job id", async function () {
-    expect(async () => await User.apply("u1", jobIds[99]))
+    expect(async () => await User.apply("u1", 3000))
     .toThrow(NotFoundError);
   });
 });

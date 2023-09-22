@@ -219,7 +219,33 @@ class User {
    */
 
   static async apply(username, jobId){
-    
+    let uResult = await db.query(`
+        SELECT username
+        FROM users
+        WHERE username = $1`, [username],
+    );
+    const user = uResult.rows[0];
+
+    if (!user) throw new NotFoundError(`No user: ${username}`);
+
+    let jResult = await db.query(`
+        SELECT id
+        FROM jobs
+        WHERE id = $1`, [jobId],
+    );
+    const job = jResult.rows[0];
+
+    if (!job) throw new NotFoundError(`No job ${jobId}`)
+
+    let result = await db.query(`
+        INSERT INTO applications
+        (username, job_id)
+        VALUES ($1, $2)
+        RETURNING username, job_id AS "jobId"`, [username, jobId]
+    );
+
+    const application = result.rows[0];
+    return { applied: application.jobId };
   }
 }
 
