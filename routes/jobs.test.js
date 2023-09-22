@@ -134,7 +134,8 @@ describe("GET /jobs", function () {
 
   test("ok with filter", async function() {
     const resp = await request(app).get("/jobs").query({
-      "title": "1"
+      "title": "1",
+      "minSalary": 100
     });
     expect(resp.body).toEqual({
       jobs: [

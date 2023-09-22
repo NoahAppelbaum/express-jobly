@@ -13,9 +13,18 @@ class Job {
    *
    * Returns { id, title, salary, equity, companyHandle }
    * */
+  static async create({ title, salary, equity, companyHandle }) {
 
-  static async create({ title, salary, equity=0, companyHandle }) {
-    // TODO: Question for PM: do we want to allow dupes?
+    const companyRes = await db.query(`
+              SELECT handle
+              FROM companies
+              WHERE handle = $1`, [companyHandle]
+    )
+
+    if (companyRes.rows[0] === undefined){
+      throw new NotFoundError(`Not found: ${companyHandle}`);
+    }
+
     let result;
     try{
       result = await db.query(`
@@ -36,9 +45,11 @@ class Job {
         companyHandle
       ],
       );
-    } catch (err) {
-      throw new BadRequestError("Ensure proper data and company handle")
+    } catch(err){
+      throw new BadRequestError("SQL error:", err)
     }
+
+
     const job = result.rows[0];
 
     return job;
@@ -52,8 +63,7 @@ class Job {
    * */
 
   static async findAll(filterParams = {}) {
-    const filter = Job.sqlForFilter(filterParams);
-
+    const { where, values }= Job.sqlForFilter(filterParams);
     const jobsRes = await db.query(`
         SELECT id,
                title,
@@ -61,9 +71,9 @@ class Job {
                equity,
                company_handle AS "companyHandle"
         FROM jobs
-        ${filter.where}
+        ${where}
         ORDER BY company_handle`,
-      filter.values);
+      values);
     return jobsRes.rows;
   }
 
@@ -154,35 +164,30 @@ class Job {
   */
   static sqlForFilter(filterParams) {
 
-    const where = [];
+    const whereClauses = [];
     const values = [];
-    let num = 1;
+
 
     if (filterParams.title) {
-      where.push(`title ILIKE $${num}`);
+      whereClauses.push(`title ILIKE $${values.length + 1}`);
       values.push(`%${filterParams.title}%`);
-      num++;
     }
 
     if (filterParams.minSalary) {
-      where.push(`salary >= $${num}`);
+      whereClauses.push(`salary >= $${values.length + 1}`);
       values.push(filterParams.minSalary);
-      num++;
     }
 
     if (filterParams.hasEquity === true) {
-      where.push(`equity > 0`);
-      num++
+      whereClauses.push(`equity > 0`);
     }
 
-    return (num > 1
-      ? {
-      where: `WHERE ${where.join(" AND ")}`,
-      values: values,
-      }
-      : { where: "", values: [] });
+    return {
+        where: ( whereClauses.length
+          ? `WHERE ${whereClauses.join(" AND ")}`
+          : "") ,
+        values: values,
+    }
   }
 }
-
-
 module.exports = Job;

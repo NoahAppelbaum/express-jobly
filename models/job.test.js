@@ -55,16 +55,30 @@ describe("create", function () {
     ]);
   });
 
+  test("works: null equity", async function() {
+    newJob.equity = null;
+    let job = await Job.create(newJob);
+    expect(job).toEqual(
+      {
+      id: expect.any(Number),
+      title: "new",
+      salary: 100,
+      equity: null,
+      companyHandle: "c1",
+      });
+  })
+
   test("bad request with missing data", async function () {
     try {
-      await Job.create({});
+      await Job.create({ "companyHandle": "c1" });
       throw new Error("fail test, you shouldn't get here");
     } catch (err) {
+      console.log("!!!!ERROR:", err)
       expect(err instanceof BadRequestError).toBeTruthy();
     }
   });
 
-  test("bad request with bad data", async function () {
+  test("not found: bad company handle", async function () {
     try {
       await Job.create(
         {
@@ -76,7 +90,7 @@ describe("create", function () {
       );
       throw new Error("fail test, you shouldn't get here");
     } catch (err) {
-      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err instanceof NotFoundError).toBeTruthy();
     }
   });
 });

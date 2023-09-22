@@ -52,8 +52,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
-  const filterParams = req.query || {};
-
+  const filterParams = req.query;
 
   if (filterParams.minSalary) {
     filterParams.minSalary = +filterParams.minSalary;
@@ -99,9 +98,6 @@ router.get("/:id", async function (req, res, next) {
  */
 
 router.patch("/:id", ensureAdmin, async function (req, res, next) {
-  if (req.body?.equity === null) {
-
-  }
 
   const validator = jsonschema.validate(
     req.body,
@@ -129,4 +125,3 @@ router.delete("/:id", ensureAdmin, async function (req, res, next) {
 
 
 module.exports = router;
-
