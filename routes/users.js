@@ -56,8 +56,9 @@ router.post("/", ensureAdmin, async function (req, res, next) {
  **/
 
 router.post("/:username/jobs/:id", ensureSelfOrAdmin, async function (req, res, next) {
+  const params = { username: req.params.username, jobId: +req.params.id}
   const validator = jsonschema.validate(
-      req.params,
+      params,
       userApplySchema,
       { required: true },
   );
@@ -66,8 +67,8 @@ router.post("/:username/jobs/:id", ensureSelfOrAdmin, async function (req, res, 
     throw new BadRequestError(errs);
   }
 
-  const application = await User.apply(req.params.username, req.params.id);
-  return res.json({ application });
+  await User.apply( params );
+  return res.json({ applied: params.jobId });
 });
 
 /** GET / => { users: [ {username, firstName, lastName, email }, ... ] }

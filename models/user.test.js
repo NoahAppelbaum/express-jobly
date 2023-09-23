@@ -226,7 +226,7 @@ describe("remove", function () {
 
   test("not found if no such user", async function () {
     try {
-      await User.remove("nope");
+      await User.remove("BAD_USERNAME");
       throw new Error("fail test, you shouldn't get here");
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
@@ -238,17 +238,23 @@ describe("remove", function () {
 
 describe("apply", function () {
   test("works", async function () {
-    const res = await User.apply("u1", jobIds[0]);
-    expect(res.rows[0]).toEqual({ username: "u1", jobId: jobIds[0] });
+    const res = await User.apply({ username:"u1", jobId: jobIds[0] });
+    expect(res).toEqual({ username: "u1", jobId: jobIds[0] });
   });
 
   test("not found if no such user", async function () {
-    expect(async () => await User.apply("u99", jobIds[0]))
-    .toThrow(NotFoundError);
+    try {
+      await User.apply({ username: "u99", jobId: jobIds[0] })
+    } catch (err){
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
   });
 
   test("not found if no such job id", async function () {
-    expect(async () => await User.apply("u1", 3000))
-    .toThrow(NotFoundError);
+    try {
+      await User.apply({ username: "u1", jobId: 3000 })
+    } catch (err){
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
   });
 });

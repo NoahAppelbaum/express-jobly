@@ -42,7 +42,6 @@ async function commonBeforeAll() {
             ('j2', 200, .1, 'c1'),
             ('j3', 300, .2, 'c1')`);
 
-            //FIXME: I think something I did here is breaking tests:
   const jobs = await db.query(`
   SELECT id
   FROM jobs
@@ -53,7 +52,6 @@ async function commonBeforeAll() {
   jobIds.push(...ids);
 
   //USER u1 HAS APPLIED FOR jobIds[1] and jobIds[2]
-  // Elise: I moved this into beforeAll
   await db.query(`
   INSERT INTO applications(username, job_id)
   VALUES ('u1', ${jobIds[1]}),

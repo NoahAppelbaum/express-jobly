@@ -16,6 +16,7 @@ const {
   adminToken,
   jobIds
 } = require("./_testCommon");
+const { BadRequestError } = require("../expressError.js");
 
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
@@ -126,6 +127,62 @@ describe("POST /users", function () {
         .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
+});
+
+/************************************** POST /users/:username/jobs/:id */
+
+describe("GET /users/:username/jobs/:id", function () {
+  test("works for target user", async function () {
+    const resp = await request(app)
+        .post(`/users/u1/jobs/${jobIds[0]}`)
+        .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.body).toEqual({ applied: jobIds[0] });
+  });
+
+  test("works for admin", async function () {
+    const resp = await request(app)
+    .post(`/users/u1/jobs/${jobIds[0]}`)
+    .set("authorization", `Bearer ${adminToken}`);
+expect(resp.body).toEqual({ applied: jobIds[0] });
+  });
+
+  test("unauth for wrong user", async function () {
+    const resp = await request(app)
+        .post(`/users/u1/jobs/${jobIds[0]}`)
+        .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+
+  test("unauth for anon", async function () {
+    const resp = await request(app)
+        .post(`/users/u1/jobs/${jobIds[0]}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+
+  test("not found if user not found", async function () {
+    const resp = await request(app)
+        .post(`/users/nope/jobs/${jobIds[0]}`)
+        .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.statusCode).toEqual(404);
+  });
+
+  test("not found if jobId not found", async function () {
+    const resp = await request(app)
+        .post(`/users/u1/jobs/999`)
+        .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.statusCode).toEqual(404);
+  });
+
+  test("bad request on erroneous job id", async function () {
+    try{
+      await request(app)
+        .post(`/users/u1/jobs/wrong`)
+        .set("authorization", `Bearer ${adminToken}`)
+    } catch (err){
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  })
+
 });
 
 /************************************** GET /users */
@@ -373,51 +430,6 @@ describe("DELETE /users/:username", function () {
   test("not found if user missing", async function () {
     const resp = await request(app)
         .delete(`/users/nope`)
-        .set("authorization", `Bearer ${adminToken}`);
-    expect(resp.statusCode).toEqual(404);
-  });
-});
-
-/************************************** GET /users/:username/jobs/:id */
-
-describe("GET /users/:username/jobs/:id", function () {
-  test("works for target user", async function () {
-    const resp = await request(app)
-        .get(`/users/u1/jobs/${jobIds[0]}`)
-        .set("authorization", `Bearer ${u1Token}`);
-    expect(resp.body).toEqual({ applied: jobIds[0] });
-  });
-
-  test("works for admin", async function () {
-    const resp = await request(app)
-    .get(`/users/u1/jobs/${jobIds[0]}`)
-    .set("authorization", `Bearer ${adminToken}`);
-expect(resp.body).toEqual({ applied: jobIds[0] });
-  });
-
-  test("unauth for wrong user", async function () {
-    const resp = await request(app)
-        .get(`/users/u1/jobs/${jobIds[0]}`)
-        .set("authorization", `Bearer ${u2Token}`);
-    expect(resp.statusCode).toEqual(401);
-  });
-
-  test("unauth for anon", async function () {
-    const resp = await request(app)
-        .get(`/users/u1/jobs/${jobIds[0]}`);
-    expect(resp.statusCode).toEqual(401);
-  });
-
-  test("not found if user not found", async function () {
-    const resp = await request(app)
-        .get(`/users/nope/jobs/${jobIds[0]}`)
-        .set("authorization", `Bearer ${adminToken}`);
-    expect(resp.statusCode).toEqual(404);
-  });
-
-  test("not found if jobId not found", async function () {
-    const resp = await request(app)
-        .get(`/users/u1/jobs/999`)
         .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(404);
   });

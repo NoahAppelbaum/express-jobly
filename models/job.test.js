@@ -73,7 +73,6 @@ describe("create", function () {
       await Job.create({ "companyHandle": "c1" });
       throw new Error("fail test, you shouldn't get here");
     } catch (err) {
-      console.log("!!!!ERROR:", err)
       expect(err instanceof BadRequestError).toBeTruthy();
     }
   });

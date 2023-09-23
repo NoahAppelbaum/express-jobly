@@ -218,7 +218,7 @@ class User {
    * Returns { username, jobID }
    */
 
-  static async apply(username, jobId){
+  static async apply( {username, jobId} ){
     let uResult = await db.query(`
         SELECT username
         FROM users
@@ -245,7 +245,7 @@ class User {
     );
 
     const application = result.rows[0];
-    return { applied: application.jobId };
+    return { ...application };
   }
 }
 

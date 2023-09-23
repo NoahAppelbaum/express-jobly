@@ -52,7 +52,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
-  const filterParams = req.query || {};
+  const filterParams = req.query;
 
   if (filterParams.minEmployees) {
     filterParams.minEmployees = +filterParams.minEmployees;
